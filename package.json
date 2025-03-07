@@ -1,0 +1,26 @@
+{
+  "name": "pfm-traza-hlf-mobile-2025",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:api": "npm run start --workspace=api",
+    "start:frontend": "npm run start --workspace=frontend",
+    "start:chaincode": "npm run start --workspace=chaincode",
+    "install:all": "npm install --workspaces",
+    "co": "sui-mono co",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@s-ui/mono": "^2.45.0"
+  },
+  "validate-commit-msg": {
+    "types": "@s-ui/mono/src/types"
+  }
+}
