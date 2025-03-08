@@ -7,7 +7,7 @@
     "start:frontend": "npm run start --workspace=frontend",
     "start:chaincode": "npm run start --workspace=chaincode",
     "install:all": "npm install --workspaces",
-    "co": "sui-mono co",
+    "co": "sui-mono commit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "workspaces": [
@@ -18,7 +18,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@s-ui/mono": "^2.45.0"
+    "@s-ui/mono": "^2.45.0",
+    "ts-node": "^10.9.2"
   },
   "validate-commit-msg": {
     "types": "@s-ui/mono/src/types"

@@ -1,11 +1,10 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import apiRoutes from './routes/api.routes.ts';
-import { loadEnvFile, env } from 'node:process';
+import apiRoutes from './routes/api.routes';
 
-loadEnvFile('src/.env');
+process.loadEnvFile('src/.env');
 
-const port = env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
 const app = express();
 
