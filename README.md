@@ -186,6 +186,3 @@ Crear un sistema transparente, seguro y descentralizado que permita rastrear el 
 - Configuración de dominios
 - SSL/TLS
 - Monitoreo y logs
-
-
-
