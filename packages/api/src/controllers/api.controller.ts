@@ -7,9 +7,7 @@ export class ApiController {
   static async test(req:Request, res:Response): Promise<void> {
     try {
       const contract = await getContract('TestContract');
-      console.log(contract)
       const result = await contract.submitTransaction('test');
-      console.log(result);
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
         status: 'success',
@@ -27,9 +25,13 @@ export class ApiController {
   // admin endpoints
   static async createUser(req:Request, res:Response): Promise<void> {
     try {
+      const { user, signature, message } = req.body;
+      const ethereumAddress = user.ethereumAddress;
+      const roleType = user.role.type;
+      
       const contract = await getContract('AdminContract');
-      const { userId, role } = req.body;
-      const result = await contract.submitTransaction('createUser', userId, role);
+      const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, message);
+      
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
         status: 'success',

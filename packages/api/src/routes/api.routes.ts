@@ -7,7 +7,7 @@ const apiRouter = Router();
 apiRouter.get('/test', ApiController.test);
 
 // admin endpoints
-// apiRouter.post('/admin/createUser', ApiController.createUser);
+apiRouter.post('/admin/createUser', ApiController.createUser);
 
 // Manufacturer endpoints
 // apiRouter.post('/manufacturer/createPhone', ApiController.createPhone);  
