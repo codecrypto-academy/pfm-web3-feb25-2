@@ -19,6 +19,7 @@
   "description": "",
   "devDependencies": {
     "@s-ui/mono": "^2.45.0",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2"
   },
   "validate-commit-msg": {

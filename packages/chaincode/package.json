@@ -9,10 +9,10 @@
     "watch": "tsc -w",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "start": "tsc && set -x && fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID"
- 
+    "start": "tsc && nodemon --exec 'fabric-chaincode-node server --chaincode-address=$CHAINCODE_SERVER_ADDRESS --chaincode-id=$CHAINCODE_ID' --watch src --ext ts"
   },
   "dependencies": {
+    "ethers": "^6.13.5",
     "fabric-contract-api": "^2.5.2",
     "fabric-shim": "^2.5.2"
   },
@@ -24,4 +24,4 @@
     "ts-node": "^10.4.0",
     "typescript": "^4.5.2"
   }
-} 
+}
