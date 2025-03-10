@@ -6,6 +6,9 @@ const apiRouter = Router();
 // test endpoint
 apiRouter.get('/test', ApiController.test);
 
+// init endpoint
+apiRouter.post('/initLedger', ApiController.initLedger);
+
 // admin endpoints
 apiRouter.post('/admin/createUser', ApiController.createUser);
 

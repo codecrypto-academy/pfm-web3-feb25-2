@@ -22,7 +22,28 @@ export class ApiController {
     }
   }
 
+  // init endpoint
+  static async initLedger(req:Request, res:Response): Promise<void> {
+    try {
+      const contract = await getContract('Chaincode');
+      const result = await contract.submitTransaction('Init');
+      res.status(200).json({
+        result: Buffer.from(result).toString('utf-8'),
+        status: 'success',
+        message: 'Ledger initialized successfully'
+      });
+    } catch (error) {
+      console.error(`Failed to initialize ledger: ${error}`);
+      res.status(500).json({
+        status: `${error}`,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // admin endpoints
+
+  // create user
   static async createUser(req:Request, res:Response): Promise<void> {
     try {
       const { user, signature, message } = req.body;
@@ -44,5 +65,9 @@ export class ApiController {
         message: 'Internal server error'
       });
     }
+  }
+
+  // get all registered users
+  static async getAllUsers(req:Request, res:Response): Promise<void> {
   }
 }
