@@ -1,4 +1,4 @@
-import { Contract, Context, Transaction, Info  } from 'fabric-contract-api';
+import { Contract, Context, Transaction, Info, Returns  } from 'fabric-contract-api';
 import { TestContract } from './contracts/test.contract';
 import { AdminContract } from './contracts/admin.contract';
 
@@ -6,19 +6,20 @@ import { AdminContract } from './contracts/admin.contract';
 @Info({ title: 'Chaincode', description: 'Class that allows the inicialization of the ledger' }) 
 class Chaincode extends Contract {
     
-    @Transaction(false)
-    public async Init(ctx: Context): Promise<void> {
+    @Transaction()
+    @Returns('string')
+    public async init(ctx: Context): Promise<string> {
         console.log('Initializing Ledger with admin users');
         
         const role  = { type: "admin" };
         const users  = [
-            { ethereumAddress: '0xc57267649E6A3EBC0159b33FE5ba9c64DCdb9447', role },
+            { ethereumAddress: '0x01ceC1af057A7C30f33c697fA7C1dC0634aEF2dC', role },
         ];
         
         for (const user of users) {
             try {
                 await ctx.stub.putState(
-                    `admin:${user.ethereumAddress}`, 
+                    user.ethereumAddress, 
                     Buffer.from(JSON.stringify(user))
                 );
             } catch (error) {
@@ -26,7 +27,7 @@ class Chaincode extends Contract {
                 throw new Error('Failed to initialize user: ${user.ethereumAddress}');
             }
         }
-        console.log('Ledger initialized');
+        return 'Ledger initialized successfully';
     }
 }
 
