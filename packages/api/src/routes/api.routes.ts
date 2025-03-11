@@ -11,6 +11,7 @@ apiRouter.post('/initLedger', ApiController.initLedger);
 
 // admin endpoints
 apiRouter.post('/admin/createUser', ApiController.createUser);
+apiRouter.get('/admin/getAllEntries', ApiController.getAllEntries);
 
 // Manufacturer endpoints
 // apiRouter.post('/manufacturer/createPhone', ApiController.createPhone);  

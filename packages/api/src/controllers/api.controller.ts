@@ -26,7 +26,7 @@ export class ApiController {
   static async initLedger(req:Request, res:Response): Promise<void> {
     try {
       const contract = await getContract('Chaincode');
-      const result = await contract.submitTransaction('Init');
+      const result = await contract.submitTransaction('init');
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
         status: 'success',
@@ -68,6 +68,23 @@ export class ApiController {
   }
 
   // get all registered users
-  static async getAllUsers(req:Request, res:Response): Promise<void> {
+  static async getAllEntries(req:Request, res:Response): Promise<void> {
+    try {
+      const contract = await getContract('AdminContract');
+      const result = await contract.evaluateTransaction('getAllEntries');
+      const entries = JSON.parse(Buffer.from(result).toString());
+      
+      res.status(200).json({
+        result: entries,
+        status: 'success',
+        message: 'All entries retrieved successfully'
+      });
+    } catch (error) {
+      console.error(`Failed to get all entries: ${error}`);
+      res.status(500).json({
+        status: `${error}`,
+        message: 'Internal server error'
+      });
+    }
   }
 }
