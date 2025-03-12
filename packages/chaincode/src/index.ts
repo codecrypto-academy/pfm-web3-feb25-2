@@ -13,7 +13,7 @@ class Chaincode extends Contract {
         
         const role  = { type: "admin" };
         const users  = [
-            { ethereumAddress: '0x01ceC1af057A7C30f33c697fA7C1dC0634aEF2dC', role },
+            { ethereumAddress:'0x01cec1af057a7c30f33c697fa7c1dc0634aef2dc', role },
         ];
         
         for (const user of users) {
@@ -24,11 +24,11 @@ class Chaincode extends Contract {
                 );
             } catch (error) {
                 console.error(`Failed to initialize user ${user.ethereumAddress}`);
-                throw new Error('Failed to initialize user: ${user.ethereumAddress}');
+                throw new Error(`Failed to initialize user: ${user.ethereumAddress}`);
             }
         }
         return 'Ledger initialized successfully';
     }
 }
 
-export const contracts: typeof Contract[] = [Chaincode, TestContract, AdminContract]; 
+export const contracts: typeof Contract[] = [Chaincode, TestContract, AdminContract];

@@ -14,43 +14,38 @@ export class AdminContract extends Contract {
     public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, message:string): Promise<string> {         
 
         // gets admin key from the world state
-        const adminKey = '0x01ceC1af057A7C30f33c697fA7C1dC0634aEF2dC';
-        const adminBuffer = await ctx.stub.getState(adminKey);
-        if (!adminBuffer || adminBuffer.length === 0) {
-            throw new Error('Admin does not exist');
+        const adminKey = '0x01cec1af057a7c30f33c697fa7c1dc0634aef2dc';
+        const adminExists = await this.userExists(ctx, adminKey);
+        if (!adminExists) {
+            throw new Error(`Admin does not exist`);
         }
+        const adminBuffer = await ctx.stub.getState(adminKey);
         const admin = JSON.parse(adminBuffer.toString());
+        const adminAddress = admin.ethereumAddress.toLowerCase();
         
         // verify signature matches to an admin
-        const signerAddress = ethers.verifyMessage(message, signature);
-        if (admin.ethereumAddress.toLowerCase() !== signerAddress.toLowerCase()) {
+        const signerAddress = ethers.verifyMessage(message, signature).toLowerCase();
+        if (adminAddress !== signerAddress) {
             throw new Error(`Only admin can create users` );
         }
 
         // verify if user already exists
-        const exists = await this.userExists(ctx, ethereumAddress);
-        if (!exists) {
-            const userBuffer = await ctx.stub.getState(ethereumAddress);
-            let address = null;
-            if (userBuffer && userBuffer.length > 0) {
-                address = JSON.parse(userBuffer.toString()).ethereumAddress;
-    
-            }
-            throw new Error(`User already exists ${address}`);
+        const userKey = this.getUserKey(role, ethereumAddress);
+        const userExists = await this.userExists(ctx, userKey);
+        if (userExists) {
+            throw new Error(`User already exists`);
         }
 
         // create user
-        const userKey = this.getUserKey(role, ethereumAddress);
         const user = { ethereumAddress, role };
         await ctx.stub.putState(userKey, Buffer.from(JSON.stringify(user)));
-        return 'User created successfully';
+        return `User created successfully ${userExists}`;
     }
 
     @Transaction(false)
     @Returns('boolean')
-    public async userExists(ctx: Context, ethereumAddress: string): Promise<boolean> {
-        // const key = this.getUserKey(ethereumAddress, 'manufacturer');
-        const userBuffer = await ctx.stub.getState(ethereumAddress);
+    public async userExists(ctx: Context, userKey: string): Promise<boolean> {
+        const userBuffer = await ctx.stub.getState(userKey);
         return userBuffer && userBuffer.length > 0;
     }
 
