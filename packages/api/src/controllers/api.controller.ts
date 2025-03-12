@@ -47,7 +47,7 @@ export class ApiController {
   static async createUser(req:Request, res:Response): Promise<void> {
     try {
       const { user, signature, message } = req.body;
-      const ethereumAddress = user.ethereumAddress;
+      const ethereumAddress = user.ethereumAddress.toLowerCase();
       const roleType = user.role.type;
       
       const contract = await getContract('AdminContract');
