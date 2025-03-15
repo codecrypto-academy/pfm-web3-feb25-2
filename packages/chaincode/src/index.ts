@@ -32,7 +32,7 @@ class Chaincode extends Contract {
     }
 
     private getUserKey(roleType:string, ethereumAddress:string): string {
-        return `${roleType}:${ethereumAddress}`;
+        return `user:${roleType}:${ethereumAddress}`;
     }
 }
 

@@ -7,7 +7,7 @@ export class AdminContract extends Contract {
 
     // Key to save users in the world state
     private getUserKey(user:string, key:string): string {
-        return `${user}:${key}`;
+        return `user:${user}:${key}`;
     }
     
     @Transaction()

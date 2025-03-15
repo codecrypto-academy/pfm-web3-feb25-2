@@ -5,7 +5,7 @@ import { Phone, PhoneSchema } from '../models/model'
 @Info({ title: 'ManufacturerContract', description: 'Allows Manufacturer to create and send tokens' })
 export class ManufacturerContract extends Contract {
     
-    // Key to save users in the world state
+    // Key to save assets in the world state
     private getKey(type:string, uid:string): string {
         return `${type}:${uid}`;
     }
@@ -77,15 +77,22 @@ export class ManufacturerContract extends Contract {
             }
             
             // verify newOWner exists
-            
+            const newOwnerKey = this.getKey('user:retailer',newOwner)
+            const newOwnerExists = this.assetExists(ctx, newOwnerKey)
+            if (!newOwnerExists) {
+                throw new Error("Can't transfer phone to a user that doesn't exist")
+            }
             // transfer asset to new owner
+            phone.owner = newOwner
+            await ctx.stub.putState(phoneKey, Buffer.from(JSON.stringify(phone)))
+            return `Phone asset has been transfered from ${signerAddress} to ${phone.owner}` 
 
     }
 
     @Transaction(false)
     @Returns('boolean')
-    private async assetExists(ctx: Context, userKey: string): Promise<boolean> {
-        const userBuffer = await ctx.stub.getState(userKey);
+    private async assetExists(ctx: Context, key: string): Promise<boolean> {
+        const userBuffer = await ctx.stub.getState(key);
         return userBuffer && userBuffer.length > 0;
     }
 }
