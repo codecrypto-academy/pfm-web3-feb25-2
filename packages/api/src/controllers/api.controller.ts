@@ -48,7 +48,7 @@ export class ApiController {
     try {
       const { user, signature, message } = req.body;
       const ethereumAddress = user.ethereumAddress.toLowerCase();
-      const roleType = user.role.type;
+      const roleType = user.role;
       
       const contract = await getContract('AdminContract');
       const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, message);
@@ -68,16 +68,16 @@ export class ApiController {
   }
 
   // get all registered users
-  static async getAllEntries(req:Request, res:Response): Promise<void> {
+  static async getAllUsers(req:Request, res:Response): Promise<void> {
     try {
       const contract = await getContract('AdminContract');
-      const result = await contract.evaluateTransaction('getAllEntries');
+      const result = await contract.evaluateTransaction('getAllUsers');
       const entries = JSON.parse(Buffer.from(result).toString());
       
       res.status(200).json({
         result: entries,
         status: 'success',
-        message: 'All entries retrieved successfully'
+        message: 'All users retrieved successfully'
       });
     } catch (error) {
       console.error(`Failed to get all entries: ${error}`);

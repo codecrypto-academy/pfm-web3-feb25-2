@@ -15,19 +15,19 @@ export class AdminContract extends Contract {
     public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, message:string): Promise<string> {         
 
         // gets admin key from the world state
-        const adminKey = this.getUserKey('admin', ethereumAddress);
+        const signerAddress = ethers.verifyMessage(message, signature).toLowerCase();
+        const adminKey = this.getUserKey('admin', signerAddress);
         const adminExists = await this.userExists(ctx, adminKey);
         if (!adminExists) {
             throw new Error(`Admin does not exist`);
         }
-        const adminBuffer = await ctx.stub.getState(adminKey);
-        const admin = JSON.parse(adminBuffer.toString());
-        const adminAddress = admin.ethereumAddress.toLowerCase();
         
         // verify signature matches to an admin
-        const signerAddress = ethers.verifyMessage(message, signature).toLowerCase();
+        const adminBuffer = await ctx.stub.getState(adminKey);
+        const admin:User = JSON.parse(adminBuffer.toString());
+        const adminAddress = admin.ethereumAddress.toLowerCase();
         if (adminAddress !== signerAddress) {
-            throw new Error(`Only admin can create users` );
+            throw new Error(`Only admin can create users`);
         }
 
         // verify if user already exists
@@ -40,7 +40,7 @@ export class AdminContract extends Contract {
         // create user
         const user = { ethereumAddress, role };
         await ctx.stub.putState(userKey, Buffer.from(JSON.stringify(user)));
-        return `User created successfully ${userExists}`;
+        return `User created successfully`;
     }
 
     @Transaction(false)
@@ -52,9 +52,8 @@ export class AdminContract extends Contract {
 
     @Transaction(false)
     @Returns('User[]')
-    public async getAllEntries(ctx: Context): Promise<User[]> {
-        
-        const iterator = await ctx.stub.getStateByRange('', '');
+    public async getAllUsers(ctx: Context): Promise<User[]> {
+        const iterator = await ctx.stub.getStateByRange('user:a', 'user:z');
         
         const entries:User[] = [];
         
