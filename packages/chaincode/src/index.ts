@@ -17,9 +17,10 @@ class Chaincode extends Contract {
         ];
         
         for (const user of users) {
+            const userKey = this.getUserKey(user.role.type, user.ethereumAddress);
             try {
                 await ctx.stub.putState(
-                    user.ethereumAddress, 
+                    userKey, 
                     Buffer.from(JSON.stringify(user))
                 );
             } catch (error) {
@@ -28,6 +29,10 @@ class Chaincode extends Contract {
             }
         }
         return 'Ledger initialized successfully';
+    }
+
+    private getUserKey(roleType:string, ethereumAddress:string): string {
+        return `${roleType}:${ethereumAddress}`;
     }
 }
 

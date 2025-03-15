@@ -1,5 +1,6 @@
 import { Context, Contract, Info, Returns, Transaction } from 'fabric-contract-api';
 import { ethers } from 'ethers';
+import { User, UserSchema } from '../models/model'
 
 @Info({ title: 'AdminContract', description: 'Allows admin manage users with eth addresses as unique identifiers and roles' })
 export class AdminContract extends Contract {
@@ -14,7 +15,7 @@ export class AdminContract extends Contract {
     public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, message:string): Promise<string> {         
 
         // gets admin key from the world state
-        const adminKey = '0x01cec1af057a7c30f33c697fa7c1dc0634aef2dc';
+        const adminKey = this.getUserKey('admin', ethereumAddress);
         const adminExists = await this.userExists(ctx, adminKey);
         if (!adminExists) {
             throw new Error(`Admin does not exist`);
@@ -50,18 +51,18 @@ export class AdminContract extends Contract {
     }
 
     @Transaction(false)
-    @Returns('any[]')
-    public async getAllEntries(ctx: Context): Promise<any[]> {
+    @Returns('User[]')
+    public async getAllEntries(ctx: Context): Promise<User[]> {
         
         const iterator = await ctx.stub.getStateByRange('', '');
         
-        const entries = [];
+        const entries:User[] = [];
         
         let result = await iterator.next();
         while (!result.done) {
             const entryBuffer = result.value.value;
             if (entryBuffer && entryBuffer.length > 0) {
-                const entry = JSON.parse(entryBuffer.toString());
+                const entry:User = JSON.parse(entryBuffer.toString());
                 entries.push(entry);
             }
             result = await iterator.next();
