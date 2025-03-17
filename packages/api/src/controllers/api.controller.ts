@@ -112,4 +112,25 @@ export class ApiController {
       });
     }
   }
+
+  // get all registered phones
+  static async getAllPhones(req:Request, res:Response): Promise<void> {
+    try {
+      const contract = await getContract('ManufacturerContract');
+      const result = await contract.evaluateTransaction('getAllPhones');
+      const entries = JSON.parse(Buffer.from(result).toString());
+      
+      res.status(200).json({
+        result: entries,
+        status: 'success',
+        message: 'All phones retrieved successfully'
+      });
+    } catch (error) {
+      console.error(`Failed to get all phones: ${error}`);
+      res.status(500).json({
+        status: `${error}`,
+        message: 'Internal server error'
+      });
+    }
+  }
 }
