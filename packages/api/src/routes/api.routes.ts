@@ -14,7 +14,7 @@ apiRouter.post('/admin/createUser', ApiController.createUser);
 apiRouter.get('/admin/getAllUsers', ApiController.getAllUsers);
 
 // Manufacturer endpoints
-// apiRouter.post('/manufacturer/createPhone', ApiController.createPhone);  
+apiRouter.post('/manufacturer/createPhoneAsset', ApiController.createPhoneAsset);  
 // apiRouter.post('/manufacturer/transferPhone', ApiController.transferPhone);
 // apiRouter.get('/manufacturer/getPhone/:id', ApiController.getPhone);
 // apiRouter.get('/manufacturer/getAllPhones', ApiController.getAllPhones);

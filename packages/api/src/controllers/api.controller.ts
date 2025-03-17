@@ -87,4 +87,29 @@ export class ApiController {
       });
     }
   }
+
+  // manufacturere endpoints
+
+  // create phone asset
+  static async createPhoneAsset(req:Request, res:Response){
+    try {
+      const { phone, signature, messageHash } = req.body;
+      const phoneData = JSON.stringify(phone).toString()
+      
+      const contract = await getContract('ManufacturerContract');
+      const result = await contract.submitTransaction('createPhoneAsset', signature, messageHash, phoneData);
+
+      res.status(200).json({
+        result: Buffer.from(result).toString('utf-8'),
+        status: 'success',
+        message: 'Phone Asset created successfully'
+      });
+    } catch (error) {
+      console.error(`Failed to create user: ${error}`);
+      res.status(500).json({
+        status: `${error}`,
+        message: 'Internal server error'
+      });
+    }
+  }
 }
