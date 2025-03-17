@@ -133,4 +133,25 @@ export class ApiController {
       });
     }
   }
+
+  static async getPhone(req:Request, res:Response) : Promise<void>{
+    try {
+      const phoneImei = req.params.phoneImei;
+      const contract = await getContract('ManufacturerContract');
+      const result = await contract.evaluateTransaction('getPhone', phoneImei);
+      const phone = JSON.parse(Buffer.from(result).toString())
+
+      res.status(200).json({
+        result: phone,
+        status: 'success',
+        message:`Phone ${phoneImei} retrieve successfuly`
+      });      
+    } catch (error) {
+      console.error(`Failed to get phone: ${error}`);
+      res.status(500).json({
+        status: `${error}`,
+        message: 'Internal server error'
+      });
+    }
+  }
 }

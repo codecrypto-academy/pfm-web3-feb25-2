@@ -16,7 +16,7 @@ apiRouter.get('/admin/getAllUsers', ApiController.getAllUsers);
 // Manufacturer endpoints
 apiRouter.post('/manufacturer/createPhoneAsset', ApiController.createPhoneAsset);  
 // apiRouter.post('/manufacturer/transferPhone', ApiController.transferPhone);
-// apiRouter.get('/manufacturer/getPhone/:id', ApiController.getPhone);
+apiRouter.get('/manufacturer/getPhone/:phoneImei', ApiController.getPhone);
 apiRouter.get('/manufacturer/getAllPhones', ApiController.getAllPhones);
 // apiRouter.get('/manufacturer/getComponent/:id', ApiController.getComponent);
 // apiRouter.get('/manufacturer/getAllComponents', ApiController.getAllComponents);
