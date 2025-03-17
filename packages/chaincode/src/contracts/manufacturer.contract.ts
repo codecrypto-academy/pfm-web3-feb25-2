@@ -81,22 +81,22 @@ export class ManufacturerContract extends Contract {
         if (!newOwnerExists) {
             throw new Error("Can't transfer phone to a user that doesn't exist")
         }
+
         // transfer asset to new owner
         phone.owner = newOwner
         await ctx.stub.putState(phoneKey, Buffer.from(JSON.stringify(phone)))
-        return `Phone asset has been transfered from ${signerAddress} to ${phone.owner}` 
-
+        return `Phone asset has been transfered from ${signerAddress} to ${phone.owner}`
     }
 
     @Transaction(false)
     @Returns('boolean')
     private async assetExists(ctx: Context, key: string): Promise<boolean> {
-        const userBuffer = await ctx.stub.getState(key);
-        return userBuffer && userBuffer.length > 0;
+        const assetBuffer = await ctx.stub.getState(key);
+        return assetBuffer && assetBuffer.length > 0;
     }
 
     @Transaction(false)
-    @Returns('User[]')
+    @Returns('Phone[]')
     public async getAllPhones(ctx: Context): Promise<Phone[]> {
         const iterator = await ctx.stub.getStateByRange('phone:000000000000000 ', 'user:999999999999999');
         
@@ -114,5 +114,17 @@ export class ManufacturerContract extends Contract {
 
         await iterator.close();
         return entries;
+    }
+
+    @Transaction(false)
+    @Returns('Phone')
+    public async getPhone(ctx: Context, phoneImei:string): Promise<Phone[]> {
+        const phoneKey = this.getKey('phone', phoneImei)
+        const phoneBuffer = await ctx.stub.getState(phoneKey)
+        if(!phoneBuffer || phoneBuffer.length <= 0){
+            throw new Error(`Phone ${phoneImei} doesn't exist`)
+        }
+        const phone = JSON.parse(phoneBuffer.toString())
+        return phone
     }
 }
