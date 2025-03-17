@@ -53,7 +53,7 @@ export class AdminContract extends Contract {
     @Transaction(false)
     @Returns('User[]')
     public async getAllUsers(ctx: Context): Promise<User[]> {
-        const iterator = await ctx.stub.getStateByRange('user:a', 'user:z');
+        const iterator = await ctx.stub.getStateByRange('user: ', 'user:z');
         
         const entries:User[] = [];
         

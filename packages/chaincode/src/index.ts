@@ -1,6 +1,7 @@
 import { Contract, Context, Transaction, Info, Returns  } from 'fabric-contract-api';
 import { TestContract } from './contracts/test.contract';
 import { AdminContract } from './contracts/admin.contract';
+import { ManufacturerContract } from './contracts/manufacturer.contract';
 import { User, UserSchema, Role, RoleSchema } from './models/model'
 
 // Define a chaincode class
@@ -14,7 +15,7 @@ class Chaincode extends Contract {
         
         const role : Role  = "admin";
         const users : User[]  = [
-            { ethereumAddress:'0x01cec1af057a7c30f33c697fa7c1dc0634aef2dc', role },
+            { ethereumAddress:'0x3096e6e2bde1606eb4ca665046dd8484f064a312', role },
         ];
         
         for (const user of users) {
@@ -37,4 +38,4 @@ class Chaincode extends Contract {
     }
 }
 
-export const contracts: typeof Contract[] = [Chaincode, TestContract, AdminContract];
+export const contracts: typeof Contract[] = [Chaincode, TestContract, AdminContract, ManufacturerContract];
