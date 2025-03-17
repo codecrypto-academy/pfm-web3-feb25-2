@@ -113,6 +113,28 @@ export class ApiController {
     }
   }
 
+  // transfer phone
+  static async transferPhone(req:Request, res:Response): Promise<void> {
+    try {
+      const { phoneImei, newOwner, messageHash, signature } = req.body
+      
+      const contract = await getContract("ManufacturerContract");
+      const result = await contract.submitTransaction("transferPhone", signature, messageHash, phoneImei, newOwner);
+
+      res.status(200).json({
+        result: Buffer.from(result).toString('utf-8'),
+        status: 'success',
+        message: 'Phone transfered susccessfully'
+      })
+    } catch (error) {
+      console.error(`Failed to create user: ${error}`);
+      res.status(500).json({
+        status: `${error}`,
+        message: 'Internal server error'
+      });
+    }
+  }
+
   // get all registered phones
   static async getAllPhones(req:Request, res:Response): Promise<void> {
     try {
