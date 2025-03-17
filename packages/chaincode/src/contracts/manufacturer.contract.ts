@@ -94,4 +94,25 @@ export class ManufacturerContract extends Contract {
         const userBuffer = await ctx.stub.getState(key);
         return userBuffer && userBuffer.length > 0;
     }
+
+    @Transaction(false)
+    @Returns('User[]')
+    public async getAllPhones(ctx: Context): Promise<Phone[]> {
+        const iterator = await ctx.stub.getStateByRange('phone:000000000000000 ', 'user:999999999999999');
+        
+        const entries:Phone[] = [];
+        
+        let result = await iterator.next();
+        while (!result.done) {
+            const entryBuffer = result.value.value;
+            if (entryBuffer && entryBuffer.length > 0) {
+                const entry:Phone = JSON.parse(entryBuffer.toString());
+                entries.push(entry);
+            }
+            result = await iterator.next();
+        }
+
+        await iterator.close();
+        return entries;
+    }
 }

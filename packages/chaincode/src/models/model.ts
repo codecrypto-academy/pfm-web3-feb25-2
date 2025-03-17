@@ -22,7 +22,7 @@ export const ComponentSchema = z.object(
 )
 
 export const PhoneSchema = z.object({
-    imei : z.string(),
+    imei : z.string().length(15),
     manufacturer : z.string(),
     model : z.string(),
     seriesNumber : z.number(),
