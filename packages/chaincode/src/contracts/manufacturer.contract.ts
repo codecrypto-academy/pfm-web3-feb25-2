@@ -55,7 +55,7 @@ export class ManufacturerContract extends Contract {
             
         // verify signer
         const signerAddress = ethers.verifyMessage(messageHash, signature).toLowerCase();
-        const signerKey = this.getKey('manufacturer', signerAddress);
+        const signerKey = this.getKey('user:manufacturer', signerAddress);
         const signerExists = await this.assetExists(ctx, signerKey);
         if (!signerExists) {
             throw new Error(`User can't transfer the phone`);
