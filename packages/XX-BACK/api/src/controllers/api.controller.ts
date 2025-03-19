@@ -43,13 +43,13 @@ export class ApiController {
 
   // admin endpoints
 
-    // Crear un usuario (Manufacturer)
-  static async createUser(req: Request, res: Response): Promise<void> {
+  // create user
+  static async createUser(req:Request, res:Response): Promise<void> {
     try {
       const { user, signature, message } = req.body;
       const ethereumAddress = user.ethereumAddress;
-      const roleType = user.role;
-
+      const roleType = user.role.type;
+      
       const contract = await getContract('AdminContract');
       const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, message);
       
