@@ -1,25 +1,15 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useWeb3 } from "@/context/web3.provide.context";
 import { Container, Typography, Box, Snackbar, Alert, CircularProgress } from "@mui/material";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
-// Extiende la interfaz global para que TS reconozca window.ethereum
-declare global {
-  interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: any[] }) => Promise<any>;
-      on: (event: string, handler: (...args: any[]) => void) => void;
-      removeListener: (event: string, handler: (...args: any[]) => void) => void;
-    };
-  }
-}
-
-const ALLOWED_ACCOUNT = "0x7a6934Cc0Ddffe00cDD8E0F92E72cbffd13879EB";
+const ALLOWED_ACCOUNT = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
 const Home = () => {
-  const [account, setAccount] = useState<string | null>(null);
+  const { account, connect, isConnected } = useWeb3();
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -27,18 +17,17 @@ const Home = () => {
   const hasAccessRef = useRef<boolean>(false);
 
   // Función que valida la cuenta y actualiza los estados
-  const validateAccount = (accounts: string[]) => {
-    if (!accounts || accounts.length === 0) {
+  const validateAccount = (account : string | null) => {
+    if (!account || account.length === 0) {
       setError("MetaMask is locked or not connected");
-      setAccount(null);
       setAccessGranted(false);
       return;
     }
-    const userAddress = accounts[0];
-    console.log("✅ Cuenta recibida:", userAddress);
-    setAccount(userAddress);
+    // const userAddress = accounts[0];
+    // console.log("✅ Cuenta recibida:", userAddress);
+    // setAccount(userAddress);
 
-    if (userAddress.toLowerCase() === ALLOWED_ACCOUNT.toLowerCase()) {
+    if (account.toLowerCase() === ALLOWED_ACCOUNT.toLowerCase()) {
       setError(null);
       setAccessGranted(true); // Acceso concedido
       if (!hasAccessRef.current) {
@@ -55,10 +44,10 @@ const Home = () => {
 
   // Función de login con MetaMask
   const handleLogin = async () => {
-    if (window.ethereum) {
+    connect();
+    if (isConnected) {
       try {
-        const accounts: string[] = await window.ethereum.request({ method: "eth_requestAccounts" });
-        validateAccount(accounts);
+        validateAccount(account);
       } catch (err) {
         setError("Error connecting to MetaMask");
       }
@@ -67,42 +56,56 @@ const Home = () => {
     }
   };
 
+  // useEffect(() => {
+  //   // Verifica la cuenta al montar el componente
+  //   const checkAccount = async () => {
+  //     if (window.ethereum) {
+  //       try {
+  //         const accounts: string[] = await window.ethereum.request({ method: "eth_accounts" });
+  //         console.log("🔄 Cuenta al montar:", accounts);  // Log para ver la cuenta en el montaje
+  //         validateAccount(account);
+  //         setLoading(false);
+  //       } catch (error) {
+  //         setError("Error fetching accounts");
+  //         setLoading(false);
+  //       }
+  //     } else {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   checkAccount(); // Verificamos la cuenta al cargar
+
+  //   // Listener para cambios en la cuenta
+  //   const handleAccountsChanged = (accounts: string[]) => {
+  //     console.log("🔄 Cuentas cambiaron:", accounts);  // Log para verificar si cambia la cuenta
+  //     validateAccount(account);
+  //   };
+
+  //   if (window.ethereum) {
+  //     window.ethereum.on("accountsChanged", handleAccountsChanged);
+  //   }
+
+  //   return () => {
+  //     if (window.ethereum) {
+  //       window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+  //     }
+  //   };
+  // }, []);
+
   useEffect(() => {
-    // Verifica la cuenta al montar el componente
-    const checkAccount = async () => {
-      if (window.ethereum) {
-        try {
-          const accounts: string[] = await window.ethereum.request({ method: "eth_accounts" });
-          console.log("🔄 Cuenta al montar:", accounts);  // Log para ver la cuenta en el montaje
-          validateAccount(accounts);
-          setLoading(false);
-        } catch (error) {
-          setError("Error fetching accounts");
-          setLoading(false);
-        }
-      } else {
+    if(isConnected) {
+      try {
+        validateAccount(account)
+        setLoading(false)
+      } catch (error) {
+        setError("Error fetching accounts");
         setLoading(false);
       }
-    };
-
-    checkAccount(); // Verificamos la cuenta al cargar
-
-    // Listener para cambios en la cuenta
-    const handleAccountsChanged = (accounts: string[]) => {
-      console.log("🔄 Cuentas cambiaron:", accounts);  // Log para verificar si cambia la cuenta
-      validateAccount(accounts);
-    };
-
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", handleAccountsChanged);
+    } else {
+        setLoading(false)
     }
-
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
-      }
-    };
-  }, []);
+  }, [isConnected])
 
   if (loading) {
     return (
@@ -122,7 +125,7 @@ const Home = () => {
       </Container>
 
       {/* Navbar siempre visible */}
-      <Navbar account={account} onLogin={handleLogin} accessGranted={accessGranted} />
+      <Navbar onLogin={handleLogin} accessGranted={accessGranted} />
 
       {successMessage && (
         <Snackbar

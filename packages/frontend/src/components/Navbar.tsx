@@ -1,22 +1,26 @@
 import { useState } from "react";
 import axios from "axios";
-import { signMessage, getMessageToSign } from "../../../signer";
 import { 
   AppBar, Toolbar, Typography, IconButton, Box, Menu, MenuItem, Dialog, DialogContent, 
   DialogActions, Button, TextField 
 } from "@mui/material";
 import { Factory, Storefront, PhoneIphone, Warehouse, PersonOutline, Add } from "@mui/icons-material";
 import Manufacturers from "./Manufacturers";
+import { useWeb3 } from "@/context/web3.provide.context";
+import { ethers } from "ethers";
 
-const ADMIN_WALLET = "0x7a6934Cc0Ddffe00cDD8E0F92E72cbffd13879EB";
+const ADMIN_WALLET = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
-const Navbar = ({ account, onLogin, accessGranted }: { account: string | null, onLogin: () => void, accessGranted: boolean }) => {
+const Navbar = ({ onLogin, accessGranted }: { account: string | null, onLogin: () => void, accessGranted: boolean }) => {
+  const { account, provider } = useWeb3()
   const [showManufacturers, setShowManufacturers] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
   const [entityId, setEntityId] = useState("");
   const [entityType, setEntityType] = useState<"Manufacturer" | "Provider" | "Retailer" | "Customer" | "Device">("Manufacturer");
+
+  console.log(account, provider)
 
   const handleMetaMaskClick = async () => {
     if (window.ethereum) {
@@ -64,18 +68,25 @@ const Navbar = ({ account, onLogin, accessGranted }: { account: string | null, o
     }
 
     try {
-      const message = getMessageToSign(ADMIN_WALLET, entityType);
-      const signature = await signMessage(message, ADMIN_WALLET);
+      const user = { 
+        ethereumAddress: walletAddress.toLowerCase(), 
+        role: entityType.toLowerCase()
+      }
 
-      const user = {
-        ethereumAddress: walletAddress,
-        role: entityType.toLowerCase(),
-      };
+      const messageHash = ethers.hashMessage(JSON.stringify(user))
+
+      if (!provider) {
+        alert('Provider not connected');
+        return;
+      }
+
+      const signer = await provider.getSigner()
+      const signature = await signer.signMessage(messageHash)
 
       const response = await axios.post("http://localhost:3000/admin/createUser", {
         user,
         signature,
-        message,
+        messageHash
       });
 
       console.log("Respuesta del servidor:", response.data);
