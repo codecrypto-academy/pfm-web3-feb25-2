@@ -12,7 +12,7 @@ const Manufacturers = () => {
     // Fetch the manufacturers data
     const fetchManufacturers = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/admin/getManufacturers');
+        const response = await axios.get('http://localhost:3000/admin/getUsersByRole/manufacturer');
         if (response.data.data && response.data.data.length > 0) {
           setManufacturers(response.data.data);
         } else {
@@ -56,7 +56,7 @@ const Manufacturers = () => {
               {manufacturers.map((manufacturer, index) => (
                 <TableRow key={index}>
                   <TableCell>{manufacturer.ethereumAddress}</TableCell>
-                  <TableCell>{manufacturer.role.type}</TableCell>
+                  <TableCell>{manufacturer.role}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
