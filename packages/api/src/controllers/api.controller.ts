@@ -48,12 +48,10 @@ export class ApiController {
   static async createUser(req: Request, res: Response): Promise<void> {
     try {
       const { user, signature, messageHash } = req.body;
-      console.log(user, signature, messageHash)
-      const ethereumAddress = user.ethereumAddress;
-      const roleType = user.role;
+      const { ethereumAddress, role } = user
 
       const contract = await getContract('AdminContract');
-      const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, messageHash);
+      const result = await contract.submitTransaction('createUser', ethereumAddress, role, signature, messageHash);
       
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
@@ -89,24 +87,27 @@ export class ApiController {
       });
     }
   }
-  static async getManufacturers(req: Request, res: Response): Promise<void> {
+
+  // get User by ethereumAddress
+  static async getUserAddress(req: Request, res: Response): Promise<void> {
+    const addressFilter = req.params
     try {
       const contract = await getContract('AdminContract');
-      const result = await contract.evaluateTransaction('getAllEntries');
+      const result = await contract.evaluateTransaction('getAllUsers');
       const entries = JSON.parse(Buffer.from(result).toString());
-      const manufacturers = entries.filter((entry: any) => entry.role.type === 'manufacturer');
+      const usersByAddress = entries.filter((entry:any) => entry.ethereumAddress === addressFilter);
 
-      if (manufacturers.length === 0) {
+      if (usersByAddress.length === 0) {
         res.status(200).json({
           status: 'success',
-          message: 'No manufacturers found',
+          message: 'No user found',
           data: []
         });
       } else {
         res.status(200).json({
           status: 'success',
-          message: 'Manufacturers retrieved successfully',
-          data: manufacturers
+          message: 'User retrieved successfully',
+          data: usersByAddress
         });
       }
     } catch (error) {
@@ -118,7 +119,38 @@ export class ApiController {
     }
   }
 
-  // manufacturere endpoints
+  // get User by role
+  static async getUserByRole(req: Request, res: Response): Promise<void> {
+    const { roleFilter } = req.params
+    try {
+      const contract = await getContract('AdminContract');
+      const result = await contract.evaluateTransaction('getAllUsers');
+      const entries = JSON.parse(Buffer.from(result).toString());
+      const usersByRole = entries.filter((entry:any) => entry.role === roleFilter);
+
+      if (usersByRole.length === 0) {
+        res.status(200).json({
+          status: 'success',
+          message: `No ${roleFilter}s found`,
+          data: []
+        });
+      } else {
+        res.status(200).json({
+          status: 'success',
+          message: `${roleFilter} retrieved successfully`,
+          data: usersByRole
+        });
+      }
+    } catch (error) {
+      console.error(`Failed to get manufacturers: ${error}`);
+      res.status(500).json({
+        status: `${error}`,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // manufacturer endpoints
 
   // create phone asset
   static async createPhoneAsset(req:Request, res:Response){

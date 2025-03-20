@@ -15,19 +15,11 @@ export class AdminContract extends Contract {
     public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, messageHash:string): Promise<string> {         
 
         // verify that signer is an admin
-        const signerAddress = ethers.verifyMessage(messageHash, signature).toLowerCase();
+        const signerAddress = ethers.verifyMessage(messageHash, signature);
         const adminKey = this.getUserKey('admin', signerAddress);
         const adminExists = await this.userExists(ctx, adminKey);
         if (!adminExists) {
             throw new Error(`Admin does not exist`);
-        }
-        
-        // verify signature matches to an admin
-        const adminBuffer = await ctx.stub.getState(adminKey);
-        const admin:User = JSON.parse(adminBuffer.toString());
-        const adminAddress = admin.ethereumAddress.toLowerCase();
-        if (adminAddress !== signerAddress) {
-            throw new Error(`Only admin can create users`);
         }
 
         // verify if user already exists
