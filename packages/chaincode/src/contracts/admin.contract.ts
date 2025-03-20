@@ -5,32 +5,27 @@ import { ethers } from 'ethers';
 export class AdminContract extends Contract {
 
     // Key to save users in the world state
-    private getUserKey(user:string, key:string): string {
-        return `${user}:${key}`;
+    private getUserKey(key:string, user:string): string {
+        return `user:${key}:${user}`;
     }
     
     @Transaction()
     @Returns('string')
-    public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, message:string): Promise<string> {         
+    public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, messageHash:string): Promise<string> {         
 
-        // gets admin key from the world state
-        const adminKey = '0x7a6934Cc0Ddffe00cDD8E0F92E72cbffd13879EB';
-        const adminBuffer = await ctx.stub.getState(adminKey);
+        // verify that signer is an admin
+        const signer = ethers.verifyMessage(messageHash, signature);
+        const signerKey = this.getUserKey('admin', signer)
+        const adminBuffer = await ctx.stub.getState(signerKey);
         if (!adminBuffer || adminBuffer.length === 0) {
-            throw new Error('Admin does not exist');
-        }
-        const admin = JSON.parse(adminBuffer.toString());
-        
-        // verify signature matches to an admin
-        const signerAddress = ethers.verifyMessage(message, signature);
-        if (admin.ethereumAddress.toLowerCase() !== signerAddress.toLowerCase()) {
-            throw new Error(`Only admin can create users` );
+            throw new Error('Signer of the message is not an admin');
         }
 
         // verify if user already exists
-        const exists = await this.userExists(ctx, ethereumAddress);
+        const userKey = this.getUserKey(role, ethereumAddress)
+        const exists = await this.userExists(ctx, userKey);
         if (!exists) {
-            const userBuffer = await ctx.stub.getState(ethereumAddress);
+            const userBuffer = await ctx.stub.getState(userKey);
             let address = null;
             if (userBuffer && userBuffer.length > 0) {
                 address = JSON.parse(userBuffer.toString()).ethereumAddress;
@@ -40,7 +35,6 @@ export class AdminContract extends Contract {
         }
 
         // create user
-        const userKey = this.getUserKey(role, ethereumAddress);
         const user = { ethereumAddress, role };
         await ctx.stub.putState(userKey, Buffer.from(JSON.stringify(user)));
         return 'User created successfully';
@@ -58,7 +52,7 @@ export class AdminContract extends Contract {
     @Returns('any[]')
     public async getAllEntries(ctx: Context): Promise<any[]> {
         
-        const iterator = await ctx.stub.getStateByRange('', '');
+        const iterator = await ctx.stub.getStateByRange('user:a', 'user:z');
         
         const entries = [];
         

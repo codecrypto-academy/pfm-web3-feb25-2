@@ -25,8 +25,9 @@ export class ApiController {
   // init endpoint
   static async initLedger(req:Request, res:Response): Promise<void> {
     try {
+      const { ethereumAddress } = req.body
       const contract = await getContract('Chaincode');
-      const result = await contract.submitTransaction('init');
+      const result = await contract.submitTransaction('init', ethereumAddress);
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
         status: 'success',
@@ -46,12 +47,13 @@ export class ApiController {
     // Crear un usuario (Manufacturer)
   static async createUser(req: Request, res: Response): Promise<void> {
     try {
-      const { user, signature, message } = req.body;
+      const { user, signature, messageHash } = req.body;
+      console.log(user, signature, messageHash)
       const ethereumAddress = user.ethereumAddress;
       const roleType = user.role;
 
       const contract = await getContract('AdminContract');
-      const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, message);
+      const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, messageHash);
       
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
@@ -117,7 +119,7 @@ export class ApiController {
     }
   }
 
-   // manufacturere endpoints
+   // manufacturers endpoints
 
   // create phone asset
   static async createPhoneAsset(req:Request, res:Response){
