@@ -1,37 +1,38 @@
-// frontend/src/components/Manufacturers.tsx
+// frontend/src/components/assetTables.tsx
 import React, { useEffect, useState } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import axios from 'axios';
 
-const Manufacturers = () => {
-  const [manufacturers, setManufacturers] = useState<any[]>([]);
+const AssetTable = ({ navFilter } : { navFilter : string | null}) => {
+  const [assets, setAssets] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch the manufacturers data
-    const fetchManufacturers = async () => {
+    // Fetch the assets data
+    const fetchAssets = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/admin/getUsersByRole/manufacturer');
+        const response = await axios.get(`http://localhost:3000/admin/getUsersByRole/${navFilter}`);
         if (response.data.data && response.data.data.length > 0) {
-          setManufacturers(response.data.data);
+          setAssets(response.data.data);
         } else {
-          setError('No manufacturers found.');
+          setError(`No ${navFilter}s  found`);
         }
       } catch (err) {
-        setError('Failed to fetch manufacturers.');
+        console.log(err)
+        setError(`Failed to fetch ${navFilter}s`);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchManufacturers();
-  }, []);
+    fetchAssets();
+  }, [navFilter]);
 
   if (loading) {
     return (
       <Box sx={{ textAlign: 'center', padding: 2 }}>
-        <Typography variant="h6">Loading manufacturers...</Typography>
+        <Typography variant="h6">Loading...</Typography>
       </Box>
     );
   }
@@ -39,7 +40,7 @@ const Manufacturers = () => {
   return (
     <Box sx={{ padding: 2 }}>
       <Typography variant="h6" gutterBottom>
-        Manufacturers
+        {navFilter && `${navFilter.charAt(0).toLocaleUpperCase + navFilter?.slice(1)}s`} str.charAt(0).toUpperCase() + str.slice(1)
       </Typography>
       {error ? (
         <Typography color="error">{error}</Typography>
@@ -53,10 +54,10 @@ const Manufacturers = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {manufacturers.map((manufacturer, index) => (
+              {assets.map((asset, index) => (
                 <TableRow key={index}>
-                  <TableCell>{manufacturer.ethereumAddress}</TableCell>
-                  <TableCell>{manufacturer.role}</TableCell>
+                  <TableCell>{asset.ethereumAddress}</TableCell>
+                  <TableCell>{asset.role}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -67,4 +68,4 @@ const Manufacturers = () => {
   );
 };
 
-export default Manufacturers;
+export default AssetTable;

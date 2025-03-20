@@ -23,9 +23,6 @@ const Home = () => {
       setAccessGranted(false);
       return;
     }
-    // const userAddress = accounts[0];
-    // console.log("✅ Cuenta recibida:", userAddress);
-    // setAccount(userAddress);
 
     if (account.toLowerCase() === ALLOWED_ACCOUNT.toLowerCase()) {
       setError(null);

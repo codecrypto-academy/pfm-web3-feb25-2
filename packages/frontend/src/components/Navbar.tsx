@@ -5,7 +5,7 @@ import {
   DialogActions, Button, TextField 
 } from "@mui/material";
 import { Factory, Storefront, PhoneIphone, Warehouse, PersonOutline, Add } from "@mui/icons-material";
-import Manufacturers from "./Manufacturers";
+import AssetTable  from "./AssetTable";
 import { useWeb3 } from "@/context/web3.provide.context";
 import { ethers } from "ethers";
 
@@ -13,14 +13,11 @@ const ADMIN_WALLET = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
 const Navbar = ({ onLogin, accessGranted }: { account: string | null, onLogin: () => void, accessGranted: boolean }) => {
   const { account, provider } = useWeb3()
-  const [showManufacturers, setShowManufacturers] = useState(false);
+  const [navFilter, setNavFilter] = useState<"manufacturer" | "provider" | "retailer" | "customer" | "device" | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
-  const [entityId, setEntityId] = useState("");
   const [entityType, setEntityType] = useState<"Manufacturer" | "Provider" | "Retailer" | "Customer" | "Device">("Manufacturer");
-
-  console.log(account, provider)
 
   const handleMetaMaskClick = async () => {
     if (window.ethereum) {
@@ -57,8 +54,7 @@ const Navbar = ({ onLogin, accessGranted }: { account: string | null, onLogin: (
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
-    setWalletAddress(""); 
-    setEntityId(""); // Resetea los campos al cerrar
+    setWalletAddress("");
   };
 
   const handleAddEntity = async () => {
@@ -122,19 +118,19 @@ const Navbar = ({ onLogin, accessGranted }: { account: string | null, onLogin: (
                 <MenuItem onClick={() => handleOpenDialog("Device")}>Device</MenuItem>
               </Menu>
 
-              <IconButton color="inherit" title="Manufacturers" onClick={() => setShowManufacturers(!showManufacturers)}>
+              <IconButton color="inherit" title="Manufacturers" onClick={() => setNavFilter('manufacturer')}>
                 <Factory />
               </IconButton>
-              <IconButton color="inherit" title="Distributors">
+              <IconButton color="inherit" title="Providers" onClick={() => setNavFilter('provider')}>
                 <Warehouse />
               </IconButton>
-              <IconButton color="inherit" title="Retailers">
+              <IconButton color="inherit" title="Retailers" onClick={() => setNavFilter('retailer')}>
                 <Storefront />
               </IconButton>
-              <IconButton color="inherit" title="Customers">
+              <IconButton color="inherit" title="Customers" onClick={() => setNavFilter('customer')}>
                 <PersonOutline />
               </IconButton>
-              <IconButton color="inherit" title="Devices">
+              <IconButton color="inherit" title="Devices" onClick={() => setNavFilter(null)}>
                 <PhoneIphone />
               </IconButton>
             </Box>
@@ -143,7 +139,7 @@ const Navbar = ({ onLogin, accessGranted }: { account: string | null, onLogin: (
       </AppBar>
 
       {/* Mostrar el componente de Manufacturers si está seleccionado */}
-      {showManufacturers && <Manufacturers />}
+      {navFilter && <AssetTable navFilter={ navFilter }/>}
 
       {/* Diálogo para agregar entidad */}
       <Dialog open={dialogOpen} onClose={handleCloseDialog}>
