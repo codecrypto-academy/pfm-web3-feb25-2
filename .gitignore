@@ -3,3 +3,4 @@ package-lock.json
 fabric-samples
 dist/
 address.txt
+signer.js
