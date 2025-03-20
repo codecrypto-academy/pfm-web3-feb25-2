@@ -12,8 +12,7 @@ apiRouter.post('/initLedger', ApiController.initLedger);
 // admin endpoints
 apiRouter.post('/admin/createUser', ApiController.createUser);
 apiRouter.get('/admin/getAllUsers', ApiController.getAllUsers);
-apiRouter.get('/admin/getManufacturers', ApiController.getManufacturers);
-
+apiRouter.get('/admin/getUsersByRole/:roleFilter', ApiController.getUserByRole);
 
 // Manufacturer endpoints
 apiRouter.post('/manufacturer/createPhoneAsset', ApiController.createPhoneAsset);  
