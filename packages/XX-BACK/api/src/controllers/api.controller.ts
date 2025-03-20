@@ -25,9 +25,8 @@ export class ApiController {
   // init endpoint
   static async initLedger(req:Request, res:Response): Promise<void> {
     try {
-      const { ethereumAddress } = req.body
       const contract = await getContract('Chaincode');
-      const result = await contract.submitTransaction('init', ethereumAddress);
+      const result = await contract.submitTransaction('init');
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
         status: 'success',
@@ -44,16 +43,15 @@ export class ApiController {
 
   // admin endpoints
 
-    // Crear un usuario (Manufacturer)
-  static async createUser(req: Request, res: Response): Promise<void> {
+  // create user
+  static async createUser(req:Request, res:Response): Promise<void> {
     try {
-      const { user, signature, messageHash } = req.body;
-      console.log(user, signature, messageHash)
+      const { user, signature, message } = req.body;
       const ethereumAddress = user.ethereumAddress;
-      const roleType = user.role;
-
+      const roleType = user.role.type;
+      
       const contract = await getContract('AdminContract');
-      const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, messageHash);
+      const result = await contract.submitTransaction('createUser', ethereumAddress, roleType, signature, message);
       
       res.status(200).json({
         result: Buffer.from(result).toString('utf-8'),
@@ -70,16 +68,16 @@ export class ApiController {
   }
 
   // get all registered users
-  static async getAllUsers(req:Request, res:Response): Promise<void> {
+  static async getAllEntries(req:Request, res:Response): Promise<void> {
     try {
       const contract = await getContract('AdminContract');
-      const result = await contract.evaluateTransaction('getAllUsers');
+      const result = await contract.evaluateTransaction('getAllEntries');
       const entries = JSON.parse(Buffer.from(result).toString());
       
       res.status(200).json({
         result: entries,
         status: 'success',
-        message: 'All users retrieved successfully'
+        message: 'All entries retrieved successfully'
       });
     } catch (error) {
       console.error(`Failed to get all entries: ${error}`);
@@ -89,6 +87,7 @@ export class ApiController {
       });
     }
   }
+
   static async getManufacturers(req: Request, res: Response): Promise<void> {
     try {
       const contract = await getContract('AdminContract');
@@ -118,7 +117,7 @@ export class ApiController {
     }
   }
 
-  // manufacturere endpoints
+   // manufacturere endpoints
 
   // create phone asset
   static async createPhoneAsset(req:Request, res:Response){

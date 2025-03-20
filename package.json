@@ -1,6 +1,7 @@
 {
   "name": "pfm-traza-hlf-mobile-2025",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start:api": "npm run start --workspace=api",
@@ -8,7 +9,8 @@
     "start:chaincode": "npm run start --workspace=chaincode",
     "install:all": "npm install --workspaces",
     "co": "sui-mono commit",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node signer.js"
   },
   "workspaces": [
     "packages/*"
@@ -26,6 +28,8 @@
     "types": "@s-ui/mono/src/types"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
     "zod": "^3.24.2"
   }
 }

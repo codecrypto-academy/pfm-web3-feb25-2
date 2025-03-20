@@ -6,16 +6,16 @@ import { User, UserSchema } from '../models/model'
 export class AdminContract extends Contract {
 
     // Key to save users in the world state
-    private getUserKey(user:string, key:string): string {
-        return `user:${user}:${key}`;
+    private getUserKey(key:string, user:string): string {
+        return `user:${key}:${user}`;
     }
     
     @Transaction()
     @Returns('string')
-    public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, message:string): Promise<string> {         
+    public async createUser(ctx: Context, ethereumAddress:string, role:string, signature:string, messageHash:string): Promise<string> {         
 
-        // gets admin key from the world state
-        const signerAddress = ethers.verifyMessage(message, signature).toLowerCase();
+        // verify that signer is an admin
+        const signerAddress = ethers.verifyMessage(messageHash, signature).toLowerCase();
         const adminKey = this.getUserKey('admin', signerAddress);
         const adminExists = await this.userExists(ctx, adminKey);
         if (!adminExists) {

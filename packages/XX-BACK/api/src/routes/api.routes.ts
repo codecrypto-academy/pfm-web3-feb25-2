@@ -11,7 +11,7 @@ apiRouter.post('/initLedger', ApiController.initLedger);
 
 // admin endpoints
 apiRouter.post('/admin/createUser', ApiController.createUser);
-apiRouter.get('/admin/getAllUsers', ApiController.getAllUsers);
+apiRouter.get('/admin/getAllEntries', ApiController.getAllEntries);
 apiRouter.get('/admin/getManufacturers', ApiController.getManufacturers);
 
 
@@ -21,10 +21,10 @@ apiRouter.post('/manufacturer/transferPhone', ApiController.transferPhone);
 apiRouter.get('/manufacturer/getPhone/:phoneImei', ApiController.getPhone);
 apiRouter.get('/manufacturer/getAllPhones', ApiController.getAllPhones);
 // Manufacturer endpoints
-apiRouter.post('/manufacturer/createPhoneAsset', ApiController.createPhoneAsset);  
-apiRouter.post('/manufacturer/transferPhone', ApiController.transferPhone);
-apiRouter.get('/manufacturer/getPhone/:phoneImei', ApiController.getPhone);
-apiRouter.get('/manufacturer/getAllPhones', ApiController.getAllPhones);
+// apiRouter.post('/manufacturer/createPhone', ApiController.createPhone);  
+// apiRouter.post('/manufacturer/transferPhone', ApiController.transferPhone);
+// apiRouter.get('/manufacturer/getPhone/:id', ApiController.getPhone);
+// apiRouter.get('/manufacturer/getAllPhones', ApiController.getAllPhones);
 // apiRouter.get('/manufacturer/getComponent/:id', ApiController.getComponent);
 // apiRouter.get('/manufacturer/getAllComponents', ApiController.getAllComponents);
 

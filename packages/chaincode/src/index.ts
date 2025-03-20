@@ -10,26 +10,23 @@ class Chaincode extends Contract {
     
     @Transaction()
     @Returns('string')
-    public async init(ctx: Context): Promise<string> {
+    public async init(ctx: Context, ethereumAddress: string): Promise<string> {
         console.log('Initializing Ledger with admin users');
         
-        const role : Role  = "admin";
-        const users : User[]  = [
-            { ethereumAddress:'0x3096e6e2bde1606eb4ca665046dd8484f064a312', role },
-        ];
+        const role  = "admin";
+        const user  = { ethereumAddress, role };
         
-        for (const user of users) {
-            const userKey = this.getUserKey(user.role, user.ethereumAddress);
-            try {
-                await ctx.stub.putState(
-                    userKey, 
-                    Buffer.from(JSON.stringify(user))
-                );
-            } catch (error) {
-                console.error(`Failed to initialize user ${user.ethereumAddress}`);
-                throw new Error(`Failed to initialize user: ${user.ethereumAddress}`);
-            }
+        try {
+            const userKey = this.getUserKey(role, ethereumAddress)
+            await ctx.stub.putState(
+                userKey, 
+                Buffer.from(JSON.stringify(user))
+            );
+        } catch (error) {
+            console.error(`Failed to initialize user ${user.ethereumAddress}`);
+            throw new Error('Failed to initialize user: ${user.ethereumAddress}');
         }
+
         return 'Ledger initialized successfully';
     }
 
